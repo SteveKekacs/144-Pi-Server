@@ -10,7 +10,7 @@ from directions import *
 port = 1128
 
 # set GPIO pin sleep time
-sleep = .5
+sleep = .2
 
 
 def run_server():
@@ -36,28 +36,28 @@ def run_server():
         client, (_, addr) = sock.accept()
         print("Established connection with %s..." % addr)
 
-        data = ''
-        started = False
-        while data != 'esc':
-            data = client.recv(1024).decode('utf-8')
+        cmd = ''
+        last_cmd = ''
+        while cmd != 'esc':
+            cmd = client.recv(1024).decode('utf-8')
 
-            if data == 'up':
-                started = False
+            if cmd == 'up' and last_cmd != 'up':
                 forward(sleep)
-            elif data == 'left':
-                started = False
+                last_cmd = cmd
+            elif cmd == 'left' and last_cmd != 'left':
                 left(sleep)
-            elif data == 'right':
-                started = False
+                last_cmd = cmd
+            elif cmd == 'right' and last_cmd != 'right':
                 right(sleep)
-            elif data == 'down':
-                started = False
+                last_cmd = cmd
+            elif cmd == 'down' and last_cmd != 'down':
                 reverse(sleep)
-            elif data == 'space' and not started:
-                started = True
+                last_cmd = cmd
+            elif cmd == 'space' and last_cmd != 'space':
                 start()
-            else:
-                started = False
+                last_cmd = cmd
+            elif cmd == 'stop' or cmd == 'space':
+                last_cmd = ''
                 stop()
 
         # cleanup gpio pins
