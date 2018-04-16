@@ -37,7 +37,7 @@ def stop():
     gpio.cleanup()
 
 
-def forward(sleep):
+def forward():
     """
     Drive car forward, for use in
     user controlled driving.
@@ -51,14 +51,8 @@ def forward(sleep):
     gpio.output(13, False)
     gpio.output(15, True)
 
-    # sleep for given time
-    time.sleep(sleep)
 
-    # cleanup pins
-    gpio.cleanup()
-
-
-def reverse(sleep):
+def reverse():
     """
     Drive car in reverse, for use in
     user controlled driving.
@@ -72,14 +66,8 @@ def reverse(sleep):
     gpio.output(13, True)
     gpio.output(15, False)
 
-    # sleep for given time
-    time.sleep(sleep)
 
-    # cleanup pins
-    gpio.cleanup()
-
-
-def right(sleep):
+def right():
     """
     Drive car right, for use in
     user controlled driving.
@@ -93,14 +81,8 @@ def right(sleep):
     gpio.output(13, False)
     gpio.output(15, True)
 
-    # sleep for given time
-    time.sleep(sleep)
 
-    # cleanup pins
-    gpio.cleanup()
-
-
-def left(sleep):
+def left():
     """
     Drive car left, for use in
     user controlled driving.
@@ -114,14 +96,8 @@ def left(sleep):
     gpio.output(13, False)
     gpio.output(15, False)
 
-    # sleep for given time
-    time.sleep(sleep)
 
-    # cleanup pins
-    gpio.cleanup()
-
-
-def pivot_left(sleep):
+def pivot_left():
     """
     Pivot car left, for use in
     user controlled driving.
@@ -135,14 +111,8 @@ def pivot_left(sleep):
     gpio.output(13, True)
     gpio.output(15, False)
 
-    # sleep for given time
-    time.sleep(sleep)
 
-    # cleanup pins
-    gpio.cleanup()
-
-
-def pivot_right(sleep):
+def pivot_right():
     """
     Pivot car right, for use in
     user controlled driving.
@@ -155,10 +125,4 @@ def pivot_right(sleep):
     gpio.output(11, True)
     gpio.output(13, False)
     gpio.output(15, True)
-
-    # sleep for given time
-    time.sleep(sleep)
-
-    # cleanup pins
-    gpio.cleanup()
 

@@ -9,9 +9,6 @@ from directions import *
 # set port to listen on
 port = 1128
 
-# set GPIO pin sleep time
-sleep = .2
-
 
 def run_server():
     # create socket object
@@ -42,16 +39,16 @@ def run_server():
             cmd = client.recv(1024).decode('utf-8')
 
             if cmd == 'up' and last_cmd != 'up':
-                forward(sleep)
+                forward()
                 last_cmd = cmd
             elif cmd == 'left' and last_cmd != 'left':
-                left(sleep)
+                left()
                 last_cmd = cmd
             elif cmd == 'right' and last_cmd != 'right':
-                right(sleep)
+                right()
                 last_cmd = cmd
             elif cmd == 'down' and last_cmd != 'down':
-                reverse(sleep)
+                reverse()
                 last_cmd = cmd
             elif cmd == 'space' and last_cmd != 'space':
                 start()
