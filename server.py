@@ -33,32 +33,37 @@ def run_server():
         client, (_, addr) = sock.accept()
         print("Established connection with %s..." % addr)
 
+        # initialize gpio pins
+        init()
+        print("Initialized GPIO pins...")
+
         cmd = ''
         last_cmd = ''
         while cmd != 'esc':
-            cmd = client.recv(1024).decode('utf-8')
+            try:
+                cmd = client.recv(1024).decode('utf-8')
+                cmd = cmd.split('.')[-1]
+            except:
+                pass
+            print(cmd)
 
             if cmd == 'up' and last_cmd != 'up':
                 forward()
-                last_cmd = cmd
             elif cmd == 'left' and last_cmd != 'left':
                 left()
-                last_cmd = cmd
             elif cmd == 'right' and last_cmd != 'right':
                 right()
-                last_cmd = cmd
             elif cmd == 'down' and last_cmd != 'down':
                 reverse()
-                last_cmd = cmd
-            elif cmd == 'space' and last_cmd != 'space':
-                start()
-                last_cmd = cmd
-            elif cmd == 'stop' or cmd == 'space':
-                last_cmd = ''
+            elif cmd == 'space' and last_cmd != 'space' or cmd == 'stop':
                 stop()
+            elif cmd == 'enter':
+                forward()
+
+            last_cmd = cmd
 
         # cleanup gpio pins
-        stop()
+        cleanup()
 
         # close client connection
         client.close()
