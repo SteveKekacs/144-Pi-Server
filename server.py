@@ -4,9 +4,13 @@ with other servers on WIFI network for controlling
 Raspberry Pi remotely.
 """
 import socket
+from directions import *
 
 # set port to listen on
 port = 1128
+
+# set GPIO pin sleep time
+sleep = .5
 
 
 def run_server():
@@ -32,8 +36,35 @@ def run_server():
         client, (_, addr) = sock.accept()
         print("Established connection with %s..." % addr)
 
-        while True:
-            print(client.recv(1024))
+        data = ''
+        started = False
+        while data != 'esc':
+            data = client.recv(1024).decode('utf-8')
+
+            if data == 'up':
+                started = False
+                forward(sleep)
+            elif data == 'left':
+                started = False
+                left(sleep)
+            elif data == 'right':
+                started = False
+                right(sleep)
+            elif data == 'down':
+                started = False
+                reverse(sleep)
+            elif data == 'space' and not started:
+                started = True
+                start()
+            else:
+                started = False
+                stop()
+
+        # cleanup gpio pins
+        stop()
+
+        # close client connection
+        client.close()
 
 
 if __name__ == '__main__':
