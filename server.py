@@ -39,7 +39,6 @@ def run_server(use_udp):
         print("Initialized GPIO pins...")
 
         cmd = ''
-        last_cmd = ''
         while cmd != 'esc':
             try:
                 cmd = client.recv(1024).decode('utf-8')
@@ -47,20 +46,16 @@ def run_server(use_udp):
             except:
                 pass
 
-            if cmd == 'up' and last_cmd != 'up':
+            if cmd == 'up' or cmd == 'enter':
                 car.forward()
-            elif cmd == 'left' and last_cmd != 'left':
+            elif cmd == 'left':
                 car.left()
-            elif cmd == 'right' and last_cmd != 'right':
+            elif cmd == 'right':
                 car.right()
-            elif cmd == 'down' and last_cmd != 'down':
+            elif cmd == 'down':
                 car.reverse()
-            elif cmd == 'space' and last_cmd != 'space' or cmd == 'stop':
-                car.start()
-            elif cmd == 'enter' and last_cmd != 'enter':
-                car.forward()
-
-            last_cmd = cmd
+            elif cmd == 'space':
+                car.stop()
 
         # cleanup gpio pins
         car.cleanup()
