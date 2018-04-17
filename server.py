@@ -4,7 +4,8 @@ with other servers on WIFI network for controlling
 Raspberry Pi remotely.
 """
 import socket
-from directions import *
+import sys
+import directions as car
 
 # set port to listen on
 port = 1128
@@ -14,7 +15,7 @@ def run_server():
     # create socket object
     print("Creating socket...")
     sock = socket.socket()
-    print("Socket created...")
+    print("%s Socket created..." % protocol_string)
 
     # bind to port
     print("Binding to port %d..." % port)
@@ -33,32 +34,36 @@ def run_server():
         client, (_, addr) = sock.accept()
         print("Established connection with %s..." % addr)
 
+        # initialize gpio pins
+        init()
+        print("Initialized GPIO pins...")
+
         cmd = ''
         last_cmd = ''
         while cmd != 'esc':
-            cmd = client.recv(1024).decode('utf-8')
+            try:
+                cmd = client.recv(1024).decode('utf-8')
+                cmd = cmd.split('.')[-1]
+            except:
+                pass
 
             if cmd == 'up' and last_cmd != 'up':
-                forward()
-                last_cmd = cmd
+                car.forward()
             elif cmd == 'left' and last_cmd != 'left':
-                left()
-                last_cmd = cmd
+                car.left()
             elif cmd == 'right' and last_cmd != 'right':
-                right()
-                last_cmd = cmd
+                car.right()
             elif cmd == 'down' and last_cmd != 'down':
-                reverse()
-                last_cmd = cmd
-            elif cmd == 'space' and last_cmd != 'space':
-                start()
-                last_cmd = cmd
-            elif cmd == 'stop' or cmd == 'space':
-                last_cmd = ''
-                stop()
+                car.reverse()
+            elif cmd == 'space' and last_cmd != 'space' or cmd == 'stop':
+                car.start()
+            elif cmd == 'enter' and last_cmd != 'enter':
+                car.forward()
+
+            last_cmd = cmd
 
         # cleanup gpio pins
-        stop()
+        car.cleanup()
 
         # close client connection
         client.close()

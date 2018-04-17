@@ -23,7 +23,6 @@ def start():
     Put car in indefinite forward
     direction, for use in autonomous driving.
     """
-    init()
     gpio.output(7, True)
     gpio.output(11, False)
     gpio.output(13, False)
@@ -34,6 +33,13 @@ def stop():
     """
     Stops car, for use in autonomous driving.
     """
+    gpio.output(7, False)
+    gpio.output(11, False)
+    gpio.output(13, False)
+    gpio.output(15, False)
+
+
+def cleanup():
     gpio.cleanup()
 
 
@@ -42,9 +48,6 @@ def forward():
     Drive car forward, for use in
     user controlled driving.
     """
-    # initialize pins
-    init()
-
     # put in forward direction
     gpio.output(7, True)
     gpio.output(11, False)
@@ -57,9 +60,6 @@ def reverse():
     Drive car in reverse, for use in
     user controlled driving.
     """
-    # initialize pins
-    init()
-
     # put in reverse direction
     gpio.output(7, False)
     gpio.output(11, True)
@@ -72,9 +72,6 @@ def right():
     Drive car right, for use in
     user controlled driving.
     """
-    # initialize pins
-    init()
-
     # put in right direction
     gpio.output(7, False)
     gpio.output(11, False)
@@ -87,9 +84,6 @@ def left():
     Drive car left, for use in
     user controlled driving.
     """
-    # initialize pins
-    init()
-
     # put in left direction
     gpio.output(7, True)
     gpio.output(11, False)
@@ -102,9 +96,6 @@ def pivot_left():
     Pivot car left, for use in
     user controlled driving.
     """
-    # initialize pins
-    init()
-
     # put in left pivot
     gpio.output(7, True)
     gpio.output(11, False)
@@ -117,9 +108,6 @@ def pivot_right():
     Pivot car right, for use in
     user controlled driving.
     """
-    # initialize pins
-    init()
-
     # put in rightpivot
     gpio.output(7, False)
     gpio.output(11, True)
