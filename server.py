@@ -4,17 +4,24 @@ with other servers on WIFI network for controlling
 Raspberry Pi remotely.
 """
 import socket
-from directions import *
+import sys
+import directions as car
 
 # set port to listen on
 port = 1128
 
 
-def run_server():
+def run_server(use_udp):
     # create socket object
     print("Creating socket...")
-    sock = socket.socket()
-    print("Socket created...")
+
+    protocol_string = 'TCP'
+    if use_udp:
+        protocol_string = 'UDP'
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    else:
+        sock = socket.socket()
+    print("%s Socket created..." % protocol_string)
 
     # bind to port
     print("Binding to port %d..." % port)
@@ -39,31 +46,35 @@ def run_server():
             cmd = client.recv(1024).decode('utf-8')
 
             if cmd == 'up' and last_cmd != 'up':
-                forward()
+                car.forward()
                 last_cmd = cmd
             elif cmd == 'left' and last_cmd != 'left':
-                left()
+                car.left()
                 last_cmd = cmd
             elif cmd == 'right' and last_cmd != 'right':
-                right()
+                car.right()
                 last_cmd = cmd
             elif cmd == 'down' and last_cmd != 'down':
-                reverse()
+                car.reverse()
                 last_cmd = cmd
             elif cmd == 'space' and last_cmd != 'space':
-                start()
+                car.start()
                 last_cmd = cmd
             elif cmd == 'stop' or cmd == 'space':
                 last_cmd = ''
-                stop()
+                car.stop()
 
         # cleanup gpio pins
-        stop()
+        car.cleanup()
 
         # close client connection
         client.close()
 
 
 if __name__ == '__main__':
-    run_server()
+    udp = False
+    if 'udp' in sys.argv:
+        udp = True
+
+    run_server(udp)
 
