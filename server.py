@@ -40,29 +40,33 @@ def run_server(use_udp):
         client, (_, addr) = sock.accept()
         print("Established connection with %s..." % addr)
 
+        # initialize gpio pins
+        init()
+        print("Initialized GPIO pins...")
+
         cmd = ''
         last_cmd = ''
         while cmd != 'esc':
-            cmd = client.recv(1024).decode('utf-8')
+            try:
+                cmd = client.recv(1024).decode('utf-8')
+                cmd = cmd.split('.')[-1]
+            except:
+                pass
 
             if cmd == 'up' and last_cmd != 'up':
                 car.forward()
-                last_cmd = cmd
             elif cmd == 'left' and last_cmd != 'left':
                 car.left()
-                last_cmd = cmd
             elif cmd == 'right' and last_cmd != 'right':
                 car.right()
-                last_cmd = cmd
             elif cmd == 'down' and last_cmd != 'down':
                 car.reverse()
-                last_cmd = cmd
-            elif cmd == 'space' and last_cmd != 'space':
+            elif cmd == 'space' and last_cmd != 'space' or cmd == 'stop':
                 car.start()
-                last_cmd = cmd
-            elif cmd == 'stop' or cmd == 'space':
-                last_cmd = ''
-                car.stop()
+            elif cmd == 'enter' and last_cmd != 'enter':
+                car.forward()
+
+            last_cmd = cmd
 
         # cleanup gpio pins
         car.cleanup()
