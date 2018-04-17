@@ -11,7 +11,7 @@ import directions as car
 port = 1128
 
 
-def run_server():
+def run_server(use_udp):
     # create socket object
     print("Creating socket...")
     sock = socket.socket()
@@ -70,5 +70,9 @@ def run_server():
 
 
 if __name__ == '__main__':
-    run_server()
+    udp = False
+    if 'udp' in sys.argv:
+        udp = True
+
+    run_server(udp)
 
