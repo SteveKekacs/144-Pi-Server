@@ -32,7 +32,6 @@ def send_video():
     print("Capturing video...")
     cap=cv2.VideoCapture(0)
 
-    print(struct.calcsize("<L"))
     # continue to send video till interrupt
     while True:
         # read frame
@@ -42,10 +41,7 @@ def send_video():
         data = pickle.dumps(frame)
 
         # send data len then data to client
-        print("SENDING FRAME")
-        print(struct.pack("<L", len(data)))
-        clientsocket.sendall(struct.pack("<L", len(data)) + data)
-        print(hi)
+        clientsocket.sendall(struct.pack("!i", len(data)) + data)
 
 if __name__ == '__main__':
     send_video()
