@@ -11,7 +11,8 @@ import pickle
 import struct
 
 # IP address of server to send video to
-HOST_IP = '10.251.46.150'
+HOST_IP = '127.0.0.1'
+# HOST_IP = '10.251.46.150'
 
 # Port to send over
 PORT = 8089
@@ -31,7 +32,7 @@ def send_video():
     print("Capturing video...")
     cap=cv2.VideoCapture(0)
 
-    print(struct.calcsize("L"))
+    print(struct.calcsize("<L"))
     # continue to send video till interrupt
     while True:
         # read frame
@@ -42,8 +43,8 @@ def send_video():
 
         # send data len then data to client
         print("SENDING FRAME")
-        print(struct.pack("L", len(data)))
-        clientsocket.sendall(struct.pack("L", len(data)) + data)
+        print(struct.pack("<L", len(data)))
+        clientsocket.sendall(struct.pack("<L", len(data)) + data)
         print(hi)
 
 if __name__ == '__main__':
