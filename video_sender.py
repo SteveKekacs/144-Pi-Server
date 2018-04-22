@@ -56,7 +56,7 @@ def send_video():
         # grab the raw NumPy array representing the image, then initialize the timestamp
         # and occupied/unoccupied text
         frame = image.array
-        frame = cv2.GaussianBlur(frame, (15,15), 0)
+        #frame = cv2.GaussianBlur(frame, (15,15), 0)
 
         # convert to string
         data = pickle.dumps(frame)
