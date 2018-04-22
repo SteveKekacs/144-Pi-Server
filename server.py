@@ -8,14 +8,14 @@ import sys
 import directions as car
 
 # set port to listen on
-port = 1128
+port = 1199
 
 
 def run_server(use_udp):
     # create socket object
     print("Creating socket...")
     sock = socket.socket()
-    print("%s Socket created..." % protocol_string)
+    print("%s Socket created...")
 
     # bind to port
     print("Binding to port %d..." % port)
@@ -35,7 +35,7 @@ def run_server(use_udp):
         print("Established connection with %s..." % addr)
 
         # initialize gpio pins
-        init()
+        car.init()
         print("Initialized GPIO pins...")
 
         cmd = ''
