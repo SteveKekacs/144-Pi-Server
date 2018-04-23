@@ -10,6 +10,8 @@ import sys
 import pickle
 import struct
 import time
+import thread
+import directions as car
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 
@@ -21,11 +23,44 @@ camera_height = 240
 # HOST_IP = '127.0.0.1'
 HOST_IP = '10.251.46.150'
 
-# Port to send over
-PORT = 8089
+# Ports to send over
+VIDEO_PORT = 8089
+COMMAND_PORT = 8989
+
+
+def recv_stop_command():
+    """
+    Waits to receive stop command from server,
+    signals car to stop.
+
+    """
+    print("Creating socket to receive stop command...")
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print("Socket for receiving stop command created...")
+
+    # bind to host
+    print("Binding to port %d..." % PORT)
+    sock.bind(('', PORT))
+
+    # listen and accept connection
+    sock.listen(10)
+    print("Socket for receiving stop command is listening...")
+
+    conn, (_, addr) = sock.accept()
+    print("Established connection with %s for receiving stop command" % addr)
+
+    # once message recieved stop car
+    conn.recv(1024)
+    car.stop() 
 
 
 def send_video(protocol):
+    """
+    Sends video to server over given protocol,
+    starts thread to receive stop command once 
+    stop sign is detected.
+    """
+
     # create socket
     # get socket type based on protocol
     socket_type = socket.SOCK_STREAM
@@ -37,9 +72,9 @@ def send_video(protocol):
     print("%s Socket created..." % protocol)
 
     if protocol == 'TCP':
-        print("Connecting to %s:%d..." % (HOST_IP, PORT))
-        clientsocket.connect((HOST_IP, PORT))
-        print("Connected to %s:%d..." % (HOST_IP, PORT))
+        print("Connecting to %s:%d..." % (HOST_IP, VIDEO_PORT))
+        clientsocket.connect((HOST_IP, VIDEO_PORT))
+        print("Connected to %s:%d..." % (HOST_IP, VIDEO_PORT))
 
     # initialize the camera and grab a reference to the raw camera capture
     print("Initializing Camera...")
@@ -52,6 +87,9 @@ def send_video(protocol):
     # allow the camera to warmup
     time.sleep(0.1)
     print("Camera ready...")
+
+    # start a thread to receive stop command
+    thread.start_new_thread(recv_stop_command, ())
 
     # continue to capture frames from camera and
     # send to remote server till interrupt
@@ -70,7 +108,7 @@ def send_video(protocol):
         if protocol == 'TCP':
             clientsocket.sendall(msg_size + data)
         else:
-            clientsocket.sendto(msg_size + data, (HOST_IP, PORT))
+            clientsocket.sendto(msg_size + data, (HOST_IP, VIDEO_PORT))
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
