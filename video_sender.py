@@ -10,7 +10,7 @@ import sys
 import pickle
 import struct
 import time
-import thread
+import _thread
 import directions as car
 from picamera.array import PiRGBArray
 from picamera import PiCamera
@@ -24,7 +24,7 @@ camera_height = 240
 HOST_IP = '10.251.46.150'
 
 # Ports to send over
-VIDEO_PORT = 8089
+VIDEO_PORT = 8088
 COMMAND_PORT = 8989
 
 
@@ -39,11 +39,11 @@ def recv_stop_command():
     print("Socket for receiving stop command created...")
 
     # bind to host
-    print("Binding to port %d..." % PORT)
-    sock.bind(('', PORT))
+    print("Binding to port %d..." % COMMAND_PORT)
+    sock.bind(('', COMMAND_PORT))
 
     # listen and accept connection
-    sock.listen(10)
+    sock.listen(1)
     print("Socket for receiving stop command is listening...")
 
     conn, (_, addr) = sock.accept()
@@ -51,7 +51,7 @@ def recv_stop_command():
 
     # once message recieved stop car
     conn.recv(1024)
-    car.stop() 
+    car.stop()
 
 
 def send_video(protocol):
@@ -89,8 +89,8 @@ def send_video(protocol):
     print("Camera ready...")
 
     # start a thread to receive stop command
-    thread.start_new_thread(recv_stop_command, ())
-
+    _thread.start_new_thread(recv_stop_command, ())
+    time.sleep(30)
     # continue to capture frames from camera and
     # send to remote server till interrupt
     for image in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -115,11 +115,8 @@ def send_video(protocol):
 
 
 if __name__ == '__main__':
-    protcol = 'TCP'
-    if sys.argv and sys.argv[0] in ['tcp', 'udp', 'rdp']:
-        protocol = sys.argv[0].upper()
+    if len(sys.argv) == 2 and sys.argv[1] in ['tcp', 'udp', 'rdp']:
+        protocol = sys.argv[1].upper()
+        send_video(protocol)
     else:
         print("Error: Invalid argument")
-        return 
-
-    send_video(protocol)
