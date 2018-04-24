@@ -34,9 +34,9 @@ def recv_stop_command():
     signals car to stop.
 
     """
-    print("Creating socket to receive stop command...")
+    print("Creating socket to receive car commands...")
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print("Socket for receiving stop command created...")
+    print("Socket for receiving car commands created...")
 
     # bind to host
     print("Binding to port %d..." % COMMAND_PORT)
@@ -44,14 +44,21 @@ def recv_stop_command():
 
     # listen and accept connection
     sock.listen(1)
-    print("Socket for receiving stop command is listening...")
+    print("Socket for receiving car commands is listening...")
 
     conn, (_, addr) = sock.accept()
-    print("Established connection with %s for receiving stop command" % addr)
+    print("Established connection with %s for receiving car commands" % addr)
 
-    # once message recieved stop car
+    # wait for message to start car
+    conn.recv(1024)
+    car.start()
+
+    # once message recieved again stop car
     conn.recv(1024)
     car.stop()
+
+    # cleanup pins
+    car.cleanup()
 
 
 def send_video(protocol):
@@ -60,6 +67,8 @@ def send_video(protocol):
     starts thread to receive stop command once 
     stop sign is detected.
     """
+    print("Initializing car...")
+    car.init()
 
     # create socket
     # get socket type based on protocol
