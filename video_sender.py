@@ -89,8 +89,9 @@ def send_video(protocol):
     print("Camera ready...")
 
     # start a thread to receive stop command
+    time.sleep(2)
     _thread.start_new_thread(recv_stop_command, ())
-    time.sleep(30)
+
     # continue to capture frames from camera and
     # send to remote server till interrupt
     for image in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
