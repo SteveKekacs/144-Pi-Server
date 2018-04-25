@@ -64,7 +64,7 @@ def recv_stop_command():
 def send_video(protocol):
     """
     Sends video to server over given protocol,
-    starts thread to receive stop command once 
+    starts thread to receive stop command once
     stop sign is detected.
     """
     print("Initializing car...")
@@ -82,7 +82,12 @@ def send_video(protocol):
 
     if protocol == 'TCP':
         print("Connecting to %s:%d..." % (HOST_IP, VIDEO_PORT))
-        clientsocket.connect((HOST_IP, VIDEO_PORT))
+        while True:
+            try:
+                clientsocket.connect((HOST_IP, VIDEO_PORT))
+                break
+            except:
+                time.sleep(1)
         print("Connected to %s:%d..." % (HOST_IP, VIDEO_PORT))
 
     # initialize the camera and grab a reference to the raw camera capture
