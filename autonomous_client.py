@@ -25,7 +25,7 @@ HOST_IP = '10.251.46.150'
 
 # Ports to send over
 VIDEO_PORT = 8088
-COMMAND_PORT = 8999
+COMMAND_PORT = 8998
 
 
 def recv_stop_command(conn):
@@ -116,8 +116,6 @@ def send_video(protocol):
 
         # convert to string
         data = pickle.dumps(frame)
-
-        print(len(data))
 
         # send data len then data to client
         try:
