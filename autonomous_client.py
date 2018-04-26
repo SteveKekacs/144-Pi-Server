@@ -5,8 +5,7 @@ stops car.
 """
 import cv2
 import numpy as np
-import socket
-import sys
+import socket import sys
 import pickle
 import struct
 import time
@@ -59,6 +58,9 @@ def recv_stop_command():
 
     # cleanup pins
     car.cleanup()
+
+    # close socket
+    sock.close()
 
 
 def send_video(protocol):
@@ -120,13 +122,20 @@ def send_video(protocol):
         msg_size = struct.pack("<L", len(data))
 
         # send data len then data to client
-        if protocol == 'TCP':
-            clientsocket.sendall(msg_size + data)
-        else:
-            clientsocket.sendto(msg_size + data, (HOST_IP, VIDEO_PORT))
+        try:
+            if protocol == 'TCP':
+                try:
+            else:
+                clientsocket.sendto(msg_size + data, (HOST_IP, VIDEO_PORT))
+        except:
+            print("Connection closed...")
+            break
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
+
+    # close socket
+    clientsocket.close()
 
 
 if __name__ == '__main__':
