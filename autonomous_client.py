@@ -130,7 +130,7 @@ def send_video(protocol):
                 # clientsocket.sendto(msg_size, (HOST_IP, VIDEO_PORT))
 
                 # send in chunks
-                chunk_size = int(len(data) / 4)
+                chunk_size = int(len(data) / 4) + 1
                 clientsocket.sendto(data[:chunk_size], (HOST_IP, VIDEO_PORT))
                 clientsocket.sendto(data[chunk_size:(2*chunk_size)], (HOST_IP, VIDEO_PORT))
                 clientsocket.sendto(data[(2*chunk_size):(3*chunk_size)], (HOST_IP, VIDEO_PORT))
