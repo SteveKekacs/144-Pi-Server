@@ -28,26 +28,11 @@ VIDEO_PORT = 8088
 COMMAND_PORT = 8989
 
 
-def recv_stop_command():
+def recv_stop_command(conn):
     """
     Waits to receive stop command from server,
     signals car to stop.
-
     """
-    print("Creating socket to receive car commands...")
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print("Socket for receiving car commands created...")
-
-    # bind to host
-    print("Binding to port %d..." % COMMAND_PORT)
-    sock.bind(('', COMMAND_PORT))
-
-    # listen and accept connection
-    sock.listen(1)
-    print("Socket for receiving car commands is listening...")
-
-    conn, (_, addr) = sock.accept()
-    print("Established connection with %s for receiving car commands" % addr)
 
     # wait for message to start car
     conn.recv(1024)
@@ -59,9 +44,6 @@ def recv_stop_command():
 
     # cleanup pins
     car.cleanup()
-
-    # close socket
-    sock.close()
 
 
 def send_video(protocol):
@@ -105,9 +87,25 @@ def send_video(protocol):
     time.sleep(0.1)
     print("Camera ready...")
 
-    # start a thread to receive stop command
+    # initialize comand socket
     time.sleep(1)
-    _thread.start_new_thread(recv_stop_command, ())
+
+    print("Creating socket to receive car commands...")
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print("Socket for receiving car commands created...")
+
+    # bind to host
+    print("Binding to port %d..." % COMMAND_PORT)
+    sock.bind(('', COMMAND_PORT))
+
+    # listen and accept connection
+    sock.listen(1)
+    print("Socket for receiving car commands is listening...")
+
+    conn, (_, addr) = sock.accept()
+    print("Established connection with %s for receiving car commands" % addr)
+
+    _thread.start_new_thread(recv_stop_command, (conn, ))
 
     # continue to capture frames from camera and
     # send to remote server till interrupt
@@ -115,9 +113,6 @@ def send_video(protocol):
         # grab the raw NumPy array representing the image, then initialize the timestamp
         # and occupied/unoccupied text
         frame = image.array
-
-	# reduce resolution
-        frame = cv2.GaussianBlur(frame, (15,15), 0)
 
         # convert to string
         data = pickle.dumps(frame)
@@ -135,10 +130,11 @@ def send_video(protocol):
                 clientsocket.sendto(msg_size, (HOST_IP, VIDEO_PORT))
 
                 # send in chunks
-                chunk_size = len(data) / 3
+                chunk_size = int(len(data) / 4)
                 clientsocket.sendto(data[:chunk_size], (HOST_IP, VIDEO_PORT))
                 clientsocket.sendto(data[chunk_size:(2*chunk_size)], (HOST_IP, VIDEO_PORT))
-                clientsocket.sendto(data[(2*chunk_size):], (HOST_IP, VIDEO_PORT))
+                clientsocket.sendto(data[(2*chunk_size):(3*chunk_size)], (HOST_IP, VIDEO_PORT))
+                clientsocket.sendto(data[(3*chunk_size):], (HOST_IP, VIDEO_PORT))
         except:
             import traceback
             print(traceback.format_exc())
@@ -148,8 +144,9 @@ def send_video(protocol):
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
 
-    # close socket
+    # close sockets
     clientsocket.close()
+    sock.close()
 
 
 if __name__ == '__main__':
