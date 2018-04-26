@@ -25,7 +25,7 @@ HOST_IP = '10.251.46.150'
 
 # Ports to send over
 VIDEO_PORT = 8088
-COMMAND_PORT = 8989
+COMMAND_PORT = 8999
 
 
 def recv_stop_command(conn):
