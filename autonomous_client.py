@@ -118,16 +118,16 @@ def send_video(protocol):
         data = pickle.dumps(frame)
 
         # pack message size into struct
-        print(len(data))
-        msg_size = struct.pack("<L", len(data))
+        # print(len(data))
+        # msg_size = struct.pack("<L", len(data))
 
         # send data len then data to client
         try:
             if protocol == 'TCP':
-                clientsocket.sendall(msg_size + data)
+                clientsocket.sendall(data)
             else:
                 # first send message size
-                clientsocket.sendto(msg_size, (HOST_IP, VIDEO_PORT))
+                # clientsocket.sendto(msg_size, (HOST_IP, VIDEO_PORT))
 
                 # send in chunks
                 chunk_size = int(len(data) / 4)
