@@ -25,7 +25,7 @@ HOST_IP = '10.251.46.150'
 
 # Ports to send over
 VIDEO_PORT = 8088
-COMMAND_PORT = 8999
+COMMAND_PORT = 8995
 
 
 def recv_stop_command(conn):
@@ -107,6 +107,8 @@ def send_video(protocol):
 
     _thread.start_new_thread(recv_stop_command, (conn, ))
 
+    time.sleep(5)
+
     # continue to capture frames from camera and
     # send to remote server till interrupt
     for image in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -117,17 +119,22 @@ def send_video(protocol):
         # convert to string
         data = pickle.dumps(frame)
 
-        print(len(data))
-
         # send data len then data to client
         try:
             if protocol == 'TCP':
                 clientsocket.sendall(data)
             else:
-                for i in xrange(20):
-                    clientsocket.sendto(data[i*11520:(i+1)*11520], (HOST_IP, VIDEO_PORT))
+                data = b'BEGIN' + data
+                print(len(data))
+                pckt_sz = 57642
+                clientsocket.sendto(data[:pckt_sz], (HOST_IP, VIDEO_PORT))
+                clientsocket.sendto(data[pckt_sz:pckt_sz*2], (HOST_IP, VIDEO_PORT))
+                clientsocket.sendto(data[pckt_sz*2:pckt_sz*3], (HOST_IP, VIDEO_PORT))
+                clientsocket.sendto(data[pckt_sz*3:], (HOST_IP, VIDEO_PORT))
 
         except:
+            import traceback
+            print(traceback.format_exc())
             print("Connection closed...")
             break
 
