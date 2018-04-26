@@ -116,10 +116,14 @@ def send_video(protocol):
         # and occupied/unoccupied text
         frame = image.array
 
+	# reduce resolution
+        frame = cv2.GaussianBlur(frame, (15,15), 0)
+
         # convert to string
         data = pickle.dumps(frame)
 
         # pack message size into struct
+        print(len(data))
         msg_size = struct.pack("<L", len(data))
 
         # send data len then data to client
@@ -129,8 +133,10 @@ def send_video(protocol):
             else:
                 clientsocket.sendto(msg_size + data, (HOST_IP, VIDEO_PORT))
         except:
-            print("Connection closed...")
-            break
+            import traceback
+            print(traceback.format_exc())
+            #print("Connection closed...")
+            #break
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
