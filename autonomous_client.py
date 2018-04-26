@@ -113,12 +113,13 @@ def send_video(protocol):
         # grab the raw NumPy array representing the image, then initialize the timestamp
         # and occupied/unoccupied text
         frame = image.array
+        frame = frame.flatten()
 
         # convert to string
         data = pickle.dumps(frame)
 
         # pack message size into struct
-        # print(len(data))
+        print(len(data))
         # msg_size = struct.pack("<L", len(data))
 
         # send data len then data to client
@@ -126,15 +127,9 @@ def send_video(protocol):
             if protocol == 'TCP':
                 clientsocket.sendall(data)
             else:
-                # first send message size
-                # clientsocket.sendto(msg_size, (HOST_IP, VIDEO_PORT))
+                for i in xrange(20):
+                    clientsocket.sendto(data[i*46080:(i+1)*46080], (HOST_IP, VIDEO_PORT))
 
-                # send in chunks
-                chunk_size = int(len(data) / 4) + 1
-                clientsocket.sendto(data[:chunk_size], (HOST_IP, VIDEO_PORT))
-                clientsocket.sendto(data[chunk_size:(2*chunk_size)], (HOST_IP, VIDEO_PORT))
-                clientsocket.sendto(data[(2*chunk_size):(3*chunk_size)], (HOST_IP, VIDEO_PORT))
-                clientsocket.sendto(data[(3*chunk_size):], (HOST_IP, VIDEO_PORT))
         except:
             import traceback
             print(traceback.format_exc())
