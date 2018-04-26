@@ -117,8 +117,7 @@ def send_video(protocol):
         # convert to string
         data = pickle.dumps(frame)
 
-        # pack message size into struct
-        # msg_size = struct.pack("<L", len(data))
+        print(len(data))
 
         # send data len then data to client
         try:
@@ -129,10 +128,8 @@ def send_video(protocol):
                     clientsocket.sendto(data[i*11520:(i+1)*11520], (HOST_IP, VIDEO_PORT))
 
         except:
-            import traceback
-            print(traceback.format_exc())
-            #print("Connection closed...")
-            #break
+            print("Connection closed...")
+            break
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)
