@@ -5,7 +5,7 @@ stops car.
 """
 import cv2
 import numpy as np
-import socket 
+import socket
 import sys
 import pickle
 import struct
@@ -131,7 +131,14 @@ def send_video(protocol):
             if protocol == 'TCP':
                 clientsocket.sendall(msg_size + data)
             else:
-                clientsocket.sendto(msg_size + data, (HOST_IP, VIDEO_PORT))
+                # first send message size
+                clientsocket.sendto(msg_size, (HOST_IP, VIDEO_PORT))
+
+                # send in chunks
+                chunk_size = len(data) / 3
+                clientsocket.sendto(data[:chunk_size], (HOST_IP, VIDEO_PORT))
+                clientsocket.sendto(data[chunk_size:(2*chunk_size)], (HOST_IP, VIDEO_PORT))
+                clientsocket.sendto(data[(2*chunk_size):], (HOST_IP, VIDEO_PORT))
         except:
             import traceback
             print(traceback.format_exc())
