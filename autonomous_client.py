@@ -73,7 +73,7 @@ def send_video(protocol):
                 break
             except:
                 time.sleep(1)
-        print("Connected to %s:%d..." % (HOST_IP, VIDEO_PORT))
+        print("Connected to %s:%d...\n\n" % (HOST_IP, VIDEO_PORT))
 
     # initialize the camera and grab a reference to the raw camera capture
     print("Initializing Camera...")
@@ -85,7 +85,7 @@ def send_video(protocol):
 
     # allow the camera to warmup
     time.sleep(0.1)
-    print("Camera ready...")
+    print("Camera ready...\n\n")
 
     # initialize comand socket
     time.sleep(1)
@@ -103,11 +103,13 @@ def send_video(protocol):
     print("Socket for receiving car commands is listening...")
 
     conn, (_, addr) = sock.accept()
-    print("Established connection with %s for receiving car commands" % addr)
+    print("Established connection with %s for receiving car commands\n\n" % addr)
 
     _thread.start_new_thread(recv_stop_command, (conn, ))
 
-    time.sleep(5)
+    time.sleep(3)
+
+    print("Beginning video...\n\n")
 
     # continue to capture frames from camera and
     # send to remote server till interrupt
@@ -125,7 +127,6 @@ def send_video(protocol):
                 clientsocket.sendall(data)
             else:
                 data = b'BEGIN' + data
-                print(len(data))
                 pckt_sz = 57642
                 clientsocket.sendto(data[:pckt_sz], (HOST_IP, VIDEO_PORT))
                 clientsocket.sendto(data[pckt_sz:pckt_sz*2], (HOST_IP, VIDEO_PORT))
@@ -133,8 +134,6 @@ def send_video(protocol):
                 clientsocket.sendto(data[pckt_sz*3:], (HOST_IP, VIDEO_PORT))
 
         except:
-            import traceback
-            print(traceback.format_exc())
             print("Connection closed...")
             break
 
