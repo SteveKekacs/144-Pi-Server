@@ -5,7 +5,8 @@ stops car.
 """
 import cv2
 import numpy as np
-import socket import sys
+import socket 
+import sys
 import pickle
 import struct
 import time
@@ -124,7 +125,7 @@ def send_video(protocol):
         # send data len then data to client
         try:
             if protocol == 'TCP':
-                try:
+                clientsocket.sendall(msg_size + data)
             else:
                 clientsocket.sendto(msg_size + data, (HOST_IP, VIDEO_PORT))
         except:
