@@ -36,10 +36,12 @@ def recv_stop_command(conn):
 
     # wait for message to start car
     conn.recv(1024)
+    print("Starting car...")
     car.start()
 
     # once message recieved again stop car
     conn.recv(1024)
+    print("Stopping car...")
     car.stop()
 
     # cleanup pins
