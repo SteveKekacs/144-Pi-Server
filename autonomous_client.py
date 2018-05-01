@@ -126,16 +126,16 @@ def send_video(protocol):
         # convert to string
         data = frame.flatten().tostring()
         print(len(data))
-        print(hi)
+
         # send data len then data to client
         try:
             if protocol == 'TCP':
                 clientsocket.sendall(data)
             else:
-                data = b'BEGIN' + data
-                pckt_sz = 9607
+                # data = b'!' * 20 + data
+                pckt_sz = 11520
 
-                for i in range(24):
+                for i in range(20):
                     clientsocket.sendto(data[pckt_sz*i:pckt_sz*(i+1)], (HOST_IP, VIDEO_PORT))
 
 
