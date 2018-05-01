@@ -124,8 +124,9 @@ def send_video(protocol):
         frame = image.array
 
         # convert to string
-        data = pickle.dumps(frame)
-
+        data = frame.flatten().tostring()
+        print(len(data))
+        print(hi)
         # send data len then data to client
         try:
             if protocol == 'TCP':
