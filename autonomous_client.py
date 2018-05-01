@@ -28,7 +28,7 @@ VIDEO_PORT = 8008
 COMMAND_PORT = 8009
 
 
-def recv_stop_command(conn):
+def recv_stop_command(conn, clientsocket):
     """
     Waits to receive stop command from server,
     signals car to stop.
@@ -46,6 +46,9 @@ def recv_stop_command(conn):
 
     # cleanup pins
     car.cleanup()
+
+    # close client socket
+    clientsocket.close()
 
 
 def send_video(protocol):
@@ -107,7 +110,7 @@ def send_video(protocol):
     conn, (_, addr) = sock.accept()
     print("Established connection with %s for receiving car commands\n\n" % addr)
 
-    _thread.start_new_thread(recv_stop_command, (conn, ))
+    _thread.start_new_thread(recv_stop_command, (conn, clientsocket))
 
     time.sleep(3)
 
@@ -144,7 +147,6 @@ def send_video(protocol):
         rawCapture.truncate(0)
 
     # close sockets
-    clientsocket.close()
     sock.close()
 
 
