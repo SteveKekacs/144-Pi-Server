@@ -131,11 +131,12 @@ def send_video(protocol):
             if protocol == 'TCP':
                 clientsocket.sendall(data)
             else:
-                # data = b'!' * 20 + data
-                pckt_sz = 11520
+                pckt_sz = 11522
 
                 for i in range(20):
-                    clientsocket.sendto(data[pckt_sz*i:pckt_sz*(i+1)], (HOST_IP, VIDEO_PORT))
+                    marker = str(i).zfill(2).encode('utf-8')
+                    clientsocket.sendto(marker + data[pckt_sz*i:pckt_sz*(i+1)], (HOST_IP, VIDEO_PORT))
+                    time.sleep(.01)
 
         except:
             print("Connection closed...")
