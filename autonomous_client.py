@@ -24,8 +24,8 @@ camera_height = 240
 HOST_IP = '10.251.46.150'
 
 # Ports to send over
-VIDEO_PORT = 8018
-COMMAND_PORT = 8019
+VIDEO_PORT = 8022
+COMMAND_PORT = 8023
 
 
 def recv_stop_command(conn, clientsocket):
@@ -131,8 +131,8 @@ def send_video(protocol):
             if protocol == 'TCP':
                 clientsocket.sendall(data)
             else:
-                data = b'!' * 20 + data
-                pckt_sz = 11521
+                # data = b'!' * 20 + data
+                pckt_sz = 11520
 
                 for i in range(20):
                     clientsocket.sendto(data[pckt_sz*i:pckt_sz*(i+1)], (HOST_IP, VIDEO_PORT))
