@@ -24,8 +24,8 @@ camera_height = 240
 HOST_IP = '10.251.46.150'
 
 # Ports to send over
-VIDEO_PORT = 8006
-COMMAND_PORT = 8007
+VIDEO_PORT = 8008
+COMMAND_PORT = 8009
 
 
 def recv_stop_command(conn):
@@ -130,8 +130,6 @@ def send_video(protocol):
             else:
                 data = b'BEGIN' + data
                 pckt_sz = 57642
-                print(data[:pckt_sz][:5], data[pckt_sz:pckt_sz*2][:5], data[pckt_sz*2:pckt_sz*3][:5], data[pckt_sz*3:][:5])
-                print(len(data[:pckt_sz]), len(data[pckt_sz:pckt_sz*2]), len(data[pckt_sz*2:pckt_sz*3]), len(data[pckt_sz*3:]))
 
                 clientsocket.sendto(data[:pckt_sz], (HOST_IP, VIDEO_PORT))
                 clientsocket.sendto(data[pckt_sz:pckt_sz*2], (HOST_IP, VIDEO_PORT))
