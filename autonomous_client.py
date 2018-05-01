@@ -24,8 +24,8 @@ camera_height = 240
 HOST_IP = '10.251.46.150'
 
 # Ports to send over
-VIDEO_PORT = 8008
-COMMAND_PORT = 8009
+VIDEO_PORT = 8014
+COMMAND_PORT = 8015
 
 
 def recv_stop_command(conn, clientsocket):
@@ -132,12 +132,11 @@ def send_video(protocol):
                 clientsocket.sendall(data)
             else:
                 data = b'BEGIN' + data
-                pckt_sz = 57642
+                pckt_sz = 9607
 
-                clientsocket.sendto(data[:pckt_sz], (HOST_IP, VIDEO_PORT))
-                clientsocket.sendto(data[pckt_sz:pckt_sz*2], (HOST_IP, VIDEO_PORT))
-                clientsocket.sendto(data[pckt_sz*2:pckt_sz*3], (HOST_IP, VIDEO_PORT))
-                clientsocket.sendto(data[pckt_sz*3:], (HOST_IP, VIDEO_PORT))
+                for i in range(24):
+                    clientsocket.sendto(data[pckt_sz*i:pckt_sz*(i+1)], (HOST_IP, VIDEO_PORT))
+
 
         except:
             print("Connection closed...")
