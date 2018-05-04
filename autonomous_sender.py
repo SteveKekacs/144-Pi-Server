@@ -15,12 +15,11 @@ import directions as car
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 
-# to speed things up, lower the resolution of the camera
+# to speed things up, use smaller size frames
 camera_width = 320
 camera_height = 240
 
 # IP address of server to send video to
-# HOST_IP = '127.0.0.1'
 HOST_IP = '10.251.46.150'
 
 # Ports to send over
