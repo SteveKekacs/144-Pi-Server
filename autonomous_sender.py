@@ -7,8 +7,6 @@ import cv2
 import numpy as np
 import socket
 import sys
-import pickle
-import struct
 import time
 import _thread
 import directions as car
@@ -19,7 +17,7 @@ from picamera import PiCamera
 camera_width = 320
 camera_height = 240
 
-# IP address of server to send video to
+# IP address of server to send video to (MacBook Air)
 HOST_IP = '10.251.46.150'
 
 # Ports to send over
@@ -27,19 +25,19 @@ VIDEO_PORT = 8022
 COMMAND_PORT = 8023
 
 
-def recv_stop_command(conn, clientsocket):
+def recv_stop_command(connenction, clientsocket):
     """
     Waits to receive stop command from server,
     signals car to stop.
     """
 
     # wait for message to start car
-    conn.recv(1024)
+    connenction.recv(1024)
     print("Starting car...")
     car.start()
 
     # once message recieved again stop car
-    conn.recv(1024)
+    connenction.recv(1024)
     print("Stopping car...")
     car.stop()
 
@@ -59,7 +57,7 @@ def send_video(protocol):
     print("Initializing car...")
     car.init()
 
-    # create socket
+    # create socket for sending video
     # get socket type based on protocol
     socket_type = socket.SOCK_STREAM
     if protocol == 'UDP':
@@ -69,6 +67,7 @@ def send_video(protocol):
     clientsocket = socket.socket(socket.AF_INET, socket_type)
     print("%s Socket created..." % protocol)
 
+    # if TCP protocol establish connection
     if protocol == 'TCP':
         print("Connecting to %s:%d..." % (HOST_IP, VIDEO_PORT))
         while True:
@@ -88,12 +87,10 @@ def send_video(protocol):
     rawCapture = PiRGBArray(camera, size=(camera_width, camera_height))
 
     # allow the camera to warmup
-    time.sleep(0.1)
+    time.sleep(1)
     print("Camera ready...\n\n")
 
-    # initialize comand socket
-    time.sleep(1)
-
+    # initialize socket for receiving car commands    
     print("Creating socket to receive car commands...")
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print("Socket for receiving car commands created...")
